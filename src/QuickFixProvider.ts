@@ -23,6 +23,8 @@ const createFixLine = (
   diagnostic: Diagnostic
 ): CodeAction => {
   const line = document.lineAt(diagnostic.range.start.line);
+  const disabledLine = line.text.includes(' # rubocop:disable ');
+
   const fix = new CodeAction(
     `Disable ${diagnostic.source} for this line`,
     CodeActionKind.QuickFix
@@ -31,7 +33,9 @@ const createFixLine = (
   fix.edit.insert(
     document.uri,
     new Position(line.lineNumber, line.range.end.character + 1),
-    ` # rubocop:disable ${diagnostic.source}`
+    disabledLine
+      ? `,${diagnostic.source}`
+      : ` # rubocop:disable ${diagnostic.source}`
   );
   return fix;
 };
