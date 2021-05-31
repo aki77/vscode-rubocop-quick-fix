@@ -26,7 +26,7 @@ const createFixLine = (
   const disabledLine = line.text.includes(' # rubocop:disable ');
 
   const fix = new CodeAction(
-    `Disable ${diagnostic.source} for this line`,
+    `Disable ${diagnostic.code} for this line`,
     CodeActionKind.QuickFix
   );
   fix.edit = new WorkspaceEdit();
@@ -34,8 +34,8 @@ const createFixLine = (
     document.uri,
     new Position(line.lineNumber, line.range.end.character + 1),
     disabledLine
-      ? `,${diagnostic.source}`
-      : ` # rubocop:disable ${diagnostic.source}`
+      ? `,${diagnostic.code}`
+      : ` # rubocop:disable ${diagnostic.code}`
   );
   return fix;
 };
@@ -45,19 +45,19 @@ const createFixFile = (
   diagnostic: Diagnostic
 ): CodeAction => {
   const fix = new CodeAction(
-    `Disable ${diagnostic.source} for this entire file`,
+    `Disable ${diagnostic.code} for this entire file`,
     CodeActionKind.QuickFix
   );
   fix.edit = new WorkspaceEdit();
   fix.edit.insert(
     document.uri,
     new Position(0, 0),
-    `# rubocop:disable ${diagnostic.source}\n`
+    `# rubocop:disable ${diagnostic.code}\n`
   );
   fix.edit.insert(
     document.uri,
     new Position(document.lineCount + 1, 0),
-    `# rubocop:enable ${diagnostic.source}\n`
+    `# rubocop:enable ${diagnostic.code}\n`
   );
   return fix;
 };
@@ -80,7 +80,7 @@ export const provideCodeActions = (
 ): CodeAction[] => {
   const diagnostics = context.diagnostics.filter(
     (diagnostic) =>
-      diagnostic.source?.includes('/') &&
+      diagnostic.source === 'rubocop' &&
       FIXABLE_SEVERITIES.includes(diagnostic.severity)
   );
   return diagnostics.length > 0 ? createFix(document, diagnostics) : [];
