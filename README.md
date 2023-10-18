@@ -8,4 +8,8 @@ Quick fix for Rubocop warnings
 
 ## Requirements
 
+Either of:
+
+- [Ruby LSP \- Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=Shopify.ruby-lsp)
 - [Ruby Solargraph \- Visual Studio Marketplace](https://marketplace.visualstudio.com/items?itemName=castwide.solargraph)
+

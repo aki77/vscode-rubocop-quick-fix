@@ -80,7 +80,7 @@ export const provideCodeActions = (
 ): CodeAction[] => {
   const diagnostics = context.diagnostics.filter(
     (diagnostic) =>
-      diagnostic.source === 'rubocop' &&
+      (diagnostic.source === 'rubocop' || diagnostic.source === 'RuboCop') &&
       FIXABLE_SEVERITIES.includes(diagnostic.severity)
   );
   return diagnostics.length > 0 ? createFix(document, diagnostics) : [];
