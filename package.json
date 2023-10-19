@@ -2,7 +2,7 @@
   "name": "rubocop-quick-fix",
   "displayName": "Rubocop Quick Fix",
   "description": "Quick fix for Rubocop warnings",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "aki77",
   "repository": {
     "type": "git",
