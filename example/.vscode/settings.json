@@ -1,0 +1,13 @@
+{
+  
+  "solargraph.checkGemVersion": false,
+  "solargraph.useBundler": true,
+  "rubyLsp.formatter": "rubocop",
+
+  // false to test only ruby-lsp
+  "solargraph.diagnostics": true,
+  "rubyLsp.enabledFeatures": {
+    // false to test only solargraph
+    "diagnostics": true,
+  }
+}

@@ -1,0 +1,9 @@
+AllCops:
+  NewCops: enable
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+Naming/MethodParameterName:
+  AllowedNames:
+    - ex
+    - id
+    - ctx
