@@ -11,7 +11,7 @@ import {
   CodeActionKind,
   WorkspaceEdit,
   Position,
-} from 'vscode';
+} from "vscode";
 
 const FIXABLE_SEVERITIES = [
   DiagnosticSeverity.Warning,
@@ -19,45 +19,44 @@ const FIXABLE_SEVERITIES = [
 ];
 
 const createFixLine = (
+  code: string | number,
   document: TextDocument,
   diagnostic: Diagnostic
 ): CodeAction => {
   const line = document.lineAt(diagnostic.range.start.line);
-  const disabledLine = line.text.includes(' # rubocop:disable ');
+  const disabledLine = line.text.includes(" # rubocop:disable ");
 
   const fix = new CodeAction(
-    `Disable ${diagnostic.code} for this line`,
+    `Disable ${code} for this line`,
     CodeActionKind.QuickFix
   );
   fix.edit = new WorkspaceEdit();
   fix.edit.insert(
     document.uri,
     new Position(line.lineNumber, line.range.end.character + 1),
-    disabledLine
-      ? `,${diagnostic.code}`
-      : ` # rubocop:disable ${diagnostic.code}`
+    disabledLine ? `,${code}` : ` # rubocop:disable ${code}`
   );
   return fix;
 };
 
 const createFixFile = (
-  document: TextDocument,
-  diagnostic: Diagnostic
+  code: string | number,
+  document: TextDocument
 ): CodeAction => {
   const fix = new CodeAction(
-    `Disable ${diagnostic.code} for this entire file`,
+    `Disable ${code} for this entire file`,
     CodeActionKind.QuickFix
   );
   fix.edit = new WorkspaceEdit();
   fix.edit.insert(
     document.uri,
     new Position(0, 0),
-    `# rubocop:disable ${diagnostic.code}\n`
+    `# rubocop:disable ${code}\n`
   );
   fix.edit.insert(
     document.uri,
     new Position(document.lineCount + 1, 0),
-    `# rubocop:enable ${diagnostic.code}\n`
+    `# rubocop:enable ${code}\n`
   );
   return fix;
 };
@@ -66,10 +65,21 @@ const createFix = (
   document: TextDocument,
   diagnostics: Diagnostic[]
 ): CodeAction[] => {
-  return diagnostics.flatMap((diagnostic) => [
-    createFixLine(document, diagnostic),
-    createFixFile(document, diagnostic),
-  ]);
+  return diagnostics.flatMap((diagnostic) => {
+    const code =
+      typeof diagnostic.code === "object"
+        ? diagnostic.code.value
+        : diagnostic.code;
+
+    if (code === null || code === undefined || code === "") {
+      return [];
+    } else {
+      return [
+        createFixLine(code, document, diagnostic),
+        createFixFile(code, document),
+      ];
+    }
+  });
 };
 
 export const provideCodeActions = (
@@ -80,7 +90,7 @@ export const provideCodeActions = (
 ): CodeAction[] => {
   const diagnostics = context.diagnostics.filter(
     (diagnostic) =>
-      (diagnostic.source === 'rubocop' || diagnostic.source === 'RuboCop') &&
+      (diagnostic.source === "rubocop" || diagnostic.source === "RuboCop") &&
       FIXABLE_SEVERITIES.includes(diagnostic.severity)
   );
   return diagnostics.length > 0 ? createFix(document, diagnostics) : [];
